@@ -1,20 +1,26 @@
-import { defineConfig } from 'astro/config'
-import { fileURLToPath } from 'node:url'
-
-import vercel from '@astrojs/vercel/serverless';
+import { defineConfig } from "astro/config";
+import vercel from "@astrojs/vercel";
 
 // https://docs.astro.build/en/reference/configuration-reference/
 export default defineConfig({
-  srcDir: 'src',
-  output: 'hybrid',
-  vite: {
-    resolve: {
-      alias: {
-        // So imports like "@/lib/utils" keep funcionando
-        '@': fileURLToPath(new URL('./', import.meta.url)),
-      },
+  srcDir: "src",
+
+  // Genera páginas estáticas donde se puede y server donde haga falta
+  output: "server",
+
+  adapter: vercel(),
+
+  image: {
+    service: {
+      entrypoint: "astro/assets/services/sharp",
     },
   },
 
-  adapter: vercel(),
-})
+  vite: {
+    resolve: {
+      alias: {
+        "@": "./",
+      },
+    },
+  },
+});
