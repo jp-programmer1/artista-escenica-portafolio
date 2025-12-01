@@ -5,7 +5,7 @@ import { X, Play, ImageIcon, Video } from "lucide-react";
 import { Category, Items, MediaType } from "@/types/categories.type";
 import { CategorySection } from "./category-section/category-section";
 
-const HOME_FOLDER_ID = import.meta.env.VITE_HOME_FOLDER_ID;
+const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID;
 
 export function GallerySection() {
   const sectionRef = useRef<HTMLElement>(null);
