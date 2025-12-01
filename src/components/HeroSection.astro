@@ -1,0 +1,54 @@
+---
+---
+
+<section id="inicio" class="relative min-h-screen flex items-center justify-center z-20">
+  <div class="text-center px-6" data-hero-content>
+    <p class="text-primary text-sm md:text-base uppercase tracking-[0.3em] mb-4 animate-fade-in">
+      Artista Escénica
+    </p>
+    <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 tracking-tight text-foreground">
+      Luna 
+      <span class="block text-primary">Kuyen</span>
+    </h1>
+    <p class="text-muted-foreground text-lg md:text-xl max-w-md mx-auto mb-8 leading-relaxed">
+      Teatro • Danza • Performance
+    </p>
+    <div class="flex items-center justify-center gap-6">
+      <a
+        href="#biografia"
+        class="px-8 py-3 bg-primary text-primary-foreground text-sm uppercase tracking-widest hover:bg-accent transition-colors duration-300"
+      >
+        Descubrir
+      </a>
+      <a
+        href="#contacto"
+        class="px-8 py-3 border border-foreground/30 text-foreground text-sm uppercase tracking-widest hover:border-primary hover:text-primary transition-colors duration-300"
+      >
+        Contacto
+      </a>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <a
+    href="#biografia"
+    class="absolute bottom-10 left-1/2 -translate-x-1/2 text-muted-foreground animate-bounce"
+    aria-label="Desplázate hacia abajo"
+    data-scroll-indicator
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+  </a>
+</section>
+
+<script>
+  const el = document.querySelector('[data-hero-content]') as HTMLElement | null;
+  const onScroll = () => {
+    const y = window.scrollY || 0;
+    if (!el) return;
+    el.style.transform = `translateY(${y * 0.3}px)`;
+    const opacity = Math.max(0, 1 - y / 500);
+    el.style.opacity = String(opacity);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>

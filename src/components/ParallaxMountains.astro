@@ -1,0 +1,97 @@
+---
+// Generate a fixed set of stars at build time
+const STAR_COUNT = 50;
+const stars = Array.from({ length: STAR_COUNT }, () => ({
+  left: `${Math.random() * 100}%`,
+  top: `${Math.random() * 50}%`,
+  delay: `${Math.random() * 3}s`,
+}));
+---
+
+<div class="fixed inset-0 pointer-events-none overflow-hidden">
+  <!-- Sky gradient -->
+  <div class="absolute inset-0 bg-gradient-to-b from-background via-background to-muted" />
+
+  <!-- Stars -->
+  <div class="absolute inset-0 opacity-40" data-layer="stars">
+    {stars.map((s, i) => (
+      <div
+        class="absolute w-1 h-1 bg-foreground/60 rounded-full"
+        style={{ left: s.left, top: s.top, animationDelay: s.delay }}
+      />
+    ))}
+  </div>
+
+  <!-- Far mountains - slowest parallax -->
+  <svg
+    class="absolute bottom-0 w-full h-[60vh] opacity-30"
+    viewBox="0 0 1440 600"
+    preserveAspectRatio="none"
+    data-layer="far"
+  >
+    <path
+      d="M0,600 L0,400 Q180,200 360,350 Q540,150 720,280 Q900,100 1080,250 Q1260,180 1440,320 L1440,600 Z"
+      fill="oklch(0.15 0.02 280)"
+    />
+  </svg>
+
+  <!-- Middle mountains - medium parallax -->
+  <svg
+    class="absolute bottom-0 w-full h-[50vh] opacity-50"
+    viewBox="0 0 1440 500"
+    preserveAspectRatio="none"
+    data-layer="mid"
+  >
+    <path
+      d="M0,500 L0,350 Q120,180 240,300 Q400,100 560,250 Q720,80 880,200 Q1040,120 1200,280 Q1320,200 1440,300 L1440,500 Z"
+      fill="oklch(0.12 0.015 280)"
+    />
+  </svg>
+
+  <!-- Near mountains - faster parallax -->
+  <svg
+    class="absolute bottom-0 w-full h-[40vh] opacity-70"
+    viewBox="0 0 1440 400"
+    preserveAspectRatio="none"
+    data-layer="near"
+  >
+    <path
+      d="M0,400 L0,280 Q100,150 200,240 Q350,80 500,200 Q650,50 800,180 Q950,100 1100,220 Q1250,140 1440,250 L1440,400 Z"
+      fill="oklch(0.1 0.01 280)"
+    />
+  </svg>
+
+  <!-- Foreground silhouette -->
+  <svg
+    class="absolute bottom-0 w-full h-[25vh]"
+    viewBox="0 0 1440 250"
+    preserveAspectRatio="none"
+    data-layer="front"
+  >
+    <path
+      d="M0,250 L0,200 Q80,120 160,180 Q280,80 400,150 Q520,60 640,140 Q760,90 880,160 Q1000,100 1120,170 Q1240,120 1440,180 L1440,250 Z"
+      fill="oklch(0.08 0.01 280)"
+    />
+  </svg>
+</div>
+
+<script>
+  const onScroll = () => {
+    const y = window.scrollY || 0;
+    const stars = document.querySelector('[data-layer="stars"]') as HTMLElement | null;
+    const far = document.querySelector('[data-layer="far"]') as HTMLElement | null;
+    const mid = document.querySelector('[data-layer="mid"]') as HTMLElement | null;
+    const near = document.querySelector('[data-layer="near"]') as HTMLElement | null;
+    const front = document.querySelector('[data-layer="front"]') as HTMLElement | null;
+
+    if (stars) stars.style.transform = `translateY(${y * 0.05}px)`;
+    if (far) far.style.transform = `translateY(${y * 0.1}px)`;
+    if (mid) mid.style.transform = `translateY(${y * 0.2}px)`;
+    if (near) near.style.transform = `translateY(${y * 0.35}px)`;
+    if (front) front.style.transform = `translateY(${y * 0.5}px)`;
+  };
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  // Initial position
+  onScroll();
+</script>

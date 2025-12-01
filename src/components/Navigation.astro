@@ -1,0 +1,92 @@
+---
+const navItems = [
+  { label: 'Inicio', href: '#inicio' },
+  { label: 'Biografía', href: '#biografia' },
+  { label: 'Material', href: '#material' },
+  { label: 'Contacto', href: '#contacto' },
+];
+---
+
+<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-transparent py-6" data-nav>
+  <div class="container mx-auto px-6 flex items-center justify-between">
+    <a href="#inicio" class="text-xl md:text-2xl font-bold tracking-wider text-primary">LK</a>
+
+    <!-- Desktop Navigation -->
+    <div class="hidden md:flex items-center gap-8">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class="text-sm uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors duration-300"
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button
+      class="md:hidden text-foreground p-2"
+      aria-label="Abrir menú"
+      data-menu-button
+    >
+      <!-- Menu icon -->
+      <svg data-icon="menu" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+      <!-- X icon -->
+      <svg data-icon="close" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <div
+    class="md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md transition-all duration-300 overflow-hidden max-h-0"
+    data-mobile
+  >
+    <div class="container mx-auto px-6 py-4 flex flex-col gap-4">
+      {navItems.map((item) => (
+        <a
+          href={item.href}
+          class="text-sm uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors duration-300 py-2"
+          data-mobile-link
+        >
+          {item.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>
+
+<script>
+  const nav = document.querySelector('[data-nav]') as HTMLElement | null;
+  const btn = document.querySelector('[data-menu-button]') as HTMLButtonElement | null;
+  const mobile = document.querySelector('[data-mobile]') as HTMLElement | null;
+  const iconMenu = document.querySelector('[data-icon="menu"]') as SVGElement | null;
+  const iconClose = document.querySelector('[data-icon="close"]') as SVGElement | null;
+  const links = Array.from(document.querySelectorAll('[data-mobile-link]')) as HTMLAnchorElement[];
+
+  let open = false;
+
+  const setOpen = (value: boolean) => {
+    open = value;
+    if (!mobile || !btn || !iconMenu || !iconClose) return;
+    mobile.style.maxHeight = open ? '24rem' : '0';
+    btn.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+    iconMenu.classList.toggle('hidden', open);
+    iconClose.classList.toggle('hidden', !open);
+  };
+
+  btn?.addEventListener('click', () => setOpen(!open));
+  links.forEach((a) => a.addEventListener('click', () => setOpen(false)));
+
+  const onScroll = () => {
+    if (!nav) return;
+    const scrolled = (window.scrollY || 0) > 50;
+    nav.classList.toggle('bg-transparent', !scrolled);
+    nav.classList.toggle('py-6', !scrolled);
+    nav.classList.toggle('bg-background/90', scrolled);
+    nav.classList.toggle('backdrop-blur-md', scrolled);
+    nav.classList.toggle('py-3', scrolled);
+  };
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>

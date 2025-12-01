@@ -1,0 +1,374 @@
+---
+const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
+  | string
+  | undefined;
+---
+
+<section
+  id="material"
+  class="relative z-20 py-32 px-6 bg-card/50"
+  data-gallery
+  data-home={HOME_FOLDER_ID}
+>
+  <div class="container mx-auto max-w-6xl">
+    <div class="text-center mb-12">
+      <p class="text-primary text-sm uppercase tracking-[0.3em] mb-4">
+        Portfolio
+      </p>
+      <h2 class="text-3xl md:text-5xl font-bold text-foreground">Material</h2>
+    </div>
+
+    <!-- Media Type Filter -->
+    <div class="flex justify-center gap-3 mb-3" data-media-types></div>
+
+    <!-- Category Filter -->
+    <div data-categories></div>
+
+    <!-- Media Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-grid>
+    </div>
+
+    <!-- Empty state -->
+    <div class="text-center py-16 hidden" data-empty>
+      <p class="text-muted-foreground">No hay contenido con estos filtros</p>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div
+    class="fixed inset-0 z-50 bg-background/95 hidden items-center justify-center p-6"
+    data-lightbox
+  >
+    <button
+      class="absolute top-6 right-6 text-foreground hover:text-primary transition-colors"
+      aria-label="Cerrar"
+      data-close
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg
+      >
+    </button>
+    <div class="max-w-4xl w-full" data-lightbox-content></div>
+  </div>
+</section>
+
+<script>
+  type Category = {
+    id: string;
+    name: string;
+    mimeType: string;
+    thumbnailLink?: string;
+  };
+  type Items = Category;
+  type MediaType = { id: string; name: string };
+  type HistoryState = {
+    categories: Category[];
+    mediaItems: Items[];
+    activeCategory: string | null;
+  };
+
+  const root = document.querySelector("[data-gallery]") as HTMLElement | null;
+  if (!root) {
+    console.error("Gallery root not found");
+  } else {
+    const HOME = root.getAttribute("data-home") || "";
+    const mediaTypesEl = root.querySelector(
+      "[data-media-types]"
+    ) as HTMLElement;
+    const categoriesEl = root.querySelector("[data-categories]") as HTMLElement;
+    const gridEl = root.querySelector("[data-grid]") as HTMLElement;
+    const emptyEl = root.querySelector("[data-empty]") as HTMLElement;
+
+    const lightboxEl = root.querySelector("[data-lightbox]") as HTMLElement;
+    const lightboxContent = root.querySelector(
+      "[data-lightbox-content]"
+    ) as HTMLElement;
+    const closeBtn = root.querySelector("[data-close]") as HTMLButtonElement;
+
+    let activeMediaType: string | null = null;
+    let activeCategory: string | null = null;
+    let categories: Category[] = [];
+    let mediaTypes: MediaType[] = [];
+    let mediaItems: Items[] = [];
+    let history: any[] = [];
+
+    const fetchJson = async (url: string) => {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+      return res.json();
+    };
+
+    const renderMediaTypes = () => {
+      mediaTypesEl.innerHTML = "";
+      mediaTypes.forEach((type) => {
+        const btn = document.createElement("button");
+        btn.className = `flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+          activeMediaType === type.id
+            ? "bg-accent text-accent-foreground shadow-lg shadow-accent/25"
+            : "bg-secondary text-secondary-foreground hover:bg-accent/20 hover:text-accent"
+        }`;
+        btn.textContent = String(type.name).toUpperCase();
+        btn.addEventListener("click", () => {
+          if (activeMediaType !== type.id) {
+            activeMediaType = type.id;
+            activeCategory = null;
+            categories = [];
+            history = [];
+            loadById(type.id);
+            renderMediaTypes();
+          }
+        });
+        mediaTypesEl.appendChild(btn);
+      });
+    };
+
+    const renderCategories = () => {
+      categoriesEl.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.className = "flex flex-wrap items-center gap-5 mx-5";
+
+      if (history.length > 0) {
+        const backWrap = document.createElement("div");
+        backWrap.className = "flex justify-center gap-3 mb-3";
+        const backBtn = document.createElement("button");
+        backBtn.className =
+          "inline-flex items-center gap-2 text-sm text-foreground hover:text-primary";
+        backBtn.setAttribute("aria-label", "Volver");
+        backBtn.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg> Volver';
+        backBtn.addEventListener("click", () => {
+          if (history.length === 0) return;
+
+          categories = history[history.length - 1];
+          history.pop();
+          mediaItems = [];
+
+          renderCategories();
+          renderGrid();
+        });
+        backWrap.appendChild(backBtn);
+        wrapper.appendChild(backWrap);
+      }
+
+      categories.forEach((c) => {
+        const btnWrap = document.createElement("div");
+        const btn = document.createElement("button");
+        btn.className = `flex items-center mb-2 gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+          activeCategory === c.id
+            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+            : "bg-secondary text-secondary-foreground hover:bg-primary/20 hover:text-primary"
+        }`;
+        btn.textContent = c.name;
+        btn.addEventListener("click", () => {
+          activeCategory = c.id;
+          handleCategoryClick(c.id);
+        });
+        btnWrap.appendChild(btn);
+        wrapper.appendChild(btnWrap);
+      });
+
+      categoriesEl.appendChild(wrapper);
+      const portal = document.createElement("div");
+      portal.id = "portal-tabs";
+      categoriesEl.appendChild(portal);
+    };
+
+    const renderGrid = () => {
+      gridEl.innerHTML = "";
+      const visible = mediaItems.length > 0;
+      emptyEl.classList.toggle("hidden", visible);
+
+      mediaItems.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = `group relative overflow-hidden cursor-pointer transition-all duration-700 opacity-100 translate-y-0`;
+        card.style.transitionDelay = `${index * 100}ms`;
+        card.addEventListener("click", () => openLightbox(item));
+
+        const aspect = item.mimeType.startsWith("video/")
+          ? "aspect-video"
+          : "aspect-[4/5]";
+        const mediaWrapper = document.createElement("div");
+        mediaWrapper.className = `${aspect} bg-muted rounded-lg overflow-hidden`;
+
+        if (item.mimeType.startsWith("image/")) {
+          const container = document.createElement("div");
+          container.className = "relative w-full h-full";
+
+          const thumb = document.createElement("img");
+          thumb.src = item.thumbnailLink || "/placeholder.svg";
+          thumb.alt = item.name;
+          thumb.loading = "lazy";
+          thumb.className =
+            "w-full h-full object-cover transition-transform duration-700 group-hover:scale-110";
+          thumb.addEventListener("error", (e) => {
+            const target = e.currentTarget as HTMLImageElement;
+            if (!target.src.endsWith("/placeholder.svg"))
+              target.src = "/placeholder.svg";
+          });
+
+          const hi = document.createElement("img");
+          hi.src = `/api/drive/file/${item.id}`;
+          hi.alt = item.name;
+          hi.loading = "lazy";
+          hi.className =
+            "absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0";
+          hi.addEventListener("load", () => hi.classList.remove("opacity-0"));
+          hi.addEventListener("error", () => {
+            hi.style.display = "none";
+          });
+
+          container.appendChild(thumb);
+          container.appendChild(hi);
+          mediaWrapper.appendChild(container);
+        } else {
+          const img = document.createElement("img");
+          img.src = '/movie.jpg';
+          img.alt = item.name;
+          img.loading = "lazy";
+          img.className = "absolute blur-xl inset-0 w-full h-full object-cover blur-xl";
+          mediaWrapper.appendChild(img);
+        }
+
+        // Overlay
+        const overlay = document.createElement("div");
+        overlay.className =
+          "absolute inset-0 bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center rounded-lg";
+        const overlayInner = document.createElement("div");
+        overlayInner.className = "text-center";
+        if (item.mimeType.startsWith("video/")) {
+          const badge = document.createElement("div");
+          badge.className =
+            "w-14 h-14 rounded-full bg-primary/90 flex items-center justify-center mb-3 mx-auto";
+          badge.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>';
+          overlayInner.appendChild(badge);
+        }
+        const txt = document.createElement("p");
+        txt.className = "text-foreground text-lg";
+        txt.textContent = item.mimeType.startsWith("video/")
+          ? ""
+          : "Ver imagen";
+        overlayInner.appendChild(txt);
+        overlay.appendChild(overlayInner);
+
+        // Type badge
+        const typeBadge = document.createElement("div");
+        typeBadge.className = `absolute top-3 left-3 px-3 py-1 text-xs uppercase tracking-wider rounded-full flex items-center gap-1.5 ${
+          item.mimeType.startsWith("video/")
+            ? "bg-accent/90 text-accent-foreground"
+            : "bg-primary/90 text-primary-foreground"
+        }`;
+        typeBadge.innerHTML = item.mimeType.startsWith("video/")
+          ? '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg> Video'
+          : '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M20.4 14.5 16 10 4 20"></path></svg> Foto';
+
+        card.appendChild(mediaWrapper);
+        card.appendChild(overlay);
+        card.appendChild(typeBadge);
+        gridEl.appendChild(card);
+      });
+    };
+
+    const openLightbox = (item: Items) => {
+      lightboxContent.innerHTML = "";
+      if (item.mimeType.startsWith("video/")) {
+        const wrap = document.createElement("div");
+        wrap.className = "space-y-4";
+        const rel = document.createElement("div");
+        rel.className =
+          "relative aspect-video bg-muted rounded-lg overflow-hidden";
+        const video = document.createElement("video");
+        video.src = `/api/drive/file/${item.id}`;
+        if (item.thumbnailLink) video.poster = item.thumbnailLink;
+        video.className = "w-full h-full object-cover";
+        video.preload = "metadata";
+        video.playsInline = true;
+        video.controls = true;
+        rel.appendChild(video);
+        wrap.appendChild(rel);
+        lightboxContent.appendChild(wrap);
+      } else {
+        const img = document.createElement("img");
+        img.src = `/api/drive/file/${item.id}`;
+        img.alt = item.name;
+        img.loading = "lazy";
+        img.className =
+          "max-w-full max-h-[80vh] object-contain rounded-lg mx-auto";
+        lightboxContent.appendChild(img);
+      }
+      lightboxEl.classList.remove("hidden");
+      lightboxEl.classList.add("flex");
+    };
+
+    const closeLightbox = () => {
+      lightboxEl.classList.add("hidden");
+      lightboxEl.classList.remove("flex");
+      lightboxContent.innerHTML = "";
+    };
+
+    lightboxEl.addEventListener("click", (e) => {
+      if (e.target === lightboxEl) closeLightbox();
+    });
+    closeBtn.addEventListener("click", closeLightbox);
+
+    const loadById = async (id: string) => {
+      const files: Category[] = await fetchJson(`/api/drive/${id}`);
+      if (!Array.isArray(files) || files.length === 0) return;
+
+      const folders = files.filter(
+        (f) => f.mimeType === "application/vnd.google-apps.folder"
+      );
+      const media = files.filter(
+        (f) =>
+          f.mimeType.startsWith("image/") || f.mimeType.startsWith("video/")
+      );
+
+      if (folders.length > 0) {
+        if (categories.length > 0) {
+          history.push(categories);
+        }
+        categories = folders;
+        mediaItems = [];
+      }
+
+      if (media.length > 0) {
+        mediaItems = media;
+      }
+
+      renderCategories();
+      renderGrid();
+    };
+
+    const handleCategoryClick = async (id: string) => {
+      activeCategory = id;
+      await loadById(id);
+    };
+
+    // Initial load of media types
+    const init = async () => {
+      const homeId = HOME || "";
+      if (!homeId) {
+        console.warn("PUBLIC_HOME_FOLDER_ID missing");
+        return;
+      }
+      const files: MediaType[] = await fetchJson(`/api/drive/${homeId}`);
+      mediaTypes = files || [];
+      if (mediaTypes.length > 0) {
+        activeMediaType = mediaTypes[0].id;
+        renderMediaTypes();
+        await loadById(activeMediaType);
+      }
+    };
+
+    init();
+  }
+</script>

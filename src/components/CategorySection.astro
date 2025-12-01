@@ -1,0 +1,37 @@
+---
+import type { Category } from '../../types/categories.type';
+interface Props {
+  categories: Category[];
+  activeCategory: string;
+  history: boolean;
+}
+const { categories = [], activeCategory = '', history = false } = Astro.props as Props;
+---
+
+<div class="flex flex-wrap items-center gap-5 mx-5" data-category-section>
+  {history && (
+    <div class="flex justify-center gap-3 mb-3">
+      <button class="inline-flex items-center gap-2 text-sm text-foreground hover:text-primary" data-action="back" aria-label="Volver">
+        <!-- Left Arrow Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+        Volver
+      </button>
+    </div>
+  )}
+
+  {categories.length > 0 && categories.map((c) => (
+    <div>
+      <button
+        data-category-id={c.id}
+        class={`flex items-center mb-2 gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+          activeCategory === c.id
+            ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+            : 'bg-secondary text-secondary-foreground hover:bg-primary/20 hover:text-primary'
+        }`}
+      >
+        {c.name}
+      </button>
+    </div>
+  ))}
+</div>
+<div id="portal-tabs"></div>
