@@ -361,7 +361,8 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
         return;
       }
       const files: MediaType[] = await fetchJson(`/api/drive/${homeId}`);
-      mediaTypes = files || [];
+      const shuffledFiles = files.sort(() => Math.random() - 0.5);
+      mediaTypes = shuffledFiles || [];
       if (mediaTypes.length > 0) {
         activeMediaType = mediaTypes[0].id;
         renderMediaTypes();
