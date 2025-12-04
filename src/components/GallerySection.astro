@@ -19,13 +19,13 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
     </div>
 
     <!-- Media Type Filter -->
-    <div class="flex justify-center gap-3 mb-3" data-media-types></div>
+    <div class="flex flex-wrap justify-center gap-2 mb-4 px-2" data-media-types></div>
 
     <!-- Category Filter -->
     <div data-categories></div>
 
     <!-- Media Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-grid>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" data-grid>
     </div>
 
     <!-- Empty state -->
@@ -36,11 +36,11 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
 
   <!-- Lightbox -->
   <div
-    class="fixed inset-0 z-50 bg-background/95 hidden items-center justify-center p-6"
+    class="fixed inset-0 z-50 bg-background/95 hidden items-center justify-center p-4 sm:p-6"
     data-lightbox
   >
     <button
-      class="absolute top-6 right-6 text-foreground hover:text-primary transition-colors"
+      class="absolute top-4 right-4 sm:top-6 sm:right-6 text-foreground hover:text-primary transition-colors"
       aria-label="Cerrar"
       data-close
     >
@@ -57,7 +57,7 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
         ><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg
       >
     </button>
-    <div class="max-w-4xl w-full" data-lightbox-content></div>
+    <div class="max-w-4xl w-full px-2 sm:px-0" data-lightbox-content></div>
   </div>
 </section>
 
@@ -111,7 +111,7 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
       mediaTypesEl.innerHTML = "";
       mediaTypes.forEach((type) => {
         const btn = document.createElement("button");
-        btn.className = `flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+        btn.className = `flex items-center gap-2 px-3 py-1.5 sm:px-5 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
           activeMediaType === type.id
             ? "bg-accent text-accent-foreground shadow-lg shadow-accent/25"
             : "bg-secondary text-secondary-foreground hover:bg-accent/20 hover:text-accent"
@@ -134,11 +134,11 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
     const renderCategories = () => {
       categoriesEl.innerHTML = "";
       const wrapper = document.createElement("div");
-      wrapper.className = "flex flex-wrap items-center gap-5 mx-5";
+      wrapper.className = "flex flex-wrap items-center justify-center gap-3 px-2 sm:px-5";
 
       if (history.length > 0) {
         const backWrap = document.createElement("div");
-        backWrap.className = "flex justify-center gap-3 mb-3";
+        backWrap.className = "flex justify-center gap-2 mb-3 w-full";
         const backBtn = document.createElement("button");
         backBtn.className =
           "inline-flex items-center gap-2 text-sm text-foreground hover:text-primary";
@@ -162,7 +162,7 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
       categories.forEach((c) => {
         const btnWrap = document.createElement("div");
         const btn = document.createElement("button");
-        btn.className = `flex items-center mb-2 gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+        btn.className = `flex items-center mb-2 gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 ${
           activeCategory === c.id
             ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
             : "bg-secondary text-secondary-foreground hover:bg-primary/20 hover:text-primary"
@@ -262,7 +262,7 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
 
         // Type badge
         const typeBadge = document.createElement("div");
-        typeBadge.className = `absolute top-3 left-3 px-3 py-1 text-xs uppercase tracking-wider rounded-full flex items-center gap-1.5 ${
+        typeBadge.className = `absolute top-2 left-2 sm:top-3 sm:left-3 px-2 py-0.5 sm:px-3 sm:py-1 text-xs uppercase tracking-wider rounded-full flex items-center gap-1.5 ${
           item.mimeType.startsWith("video/")
             ? "bg-accent/90 text-accent-foreground"
             : "bg-primary/90 text-primary-foreground"
