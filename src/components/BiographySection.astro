@@ -1,57 +1,55 @@
----
----
-
 <section id="biografia" class="relative z-20 py-32 px-6" data-bio>
   <div class="container mx-auto max-w-5xl">
     <div class="grid md:grid-cols-2 gap-12 items-center">
       <!-- Image -->
-      <div class="relative transition-all duration-1000 opacity-0 -translate-x-10" data-bio-image>
+      <div
+        class="relative transition-all duration-1000 opacity-0 -translate-x-10"
+        data-bio-image
+      >
         <div class="aspect-[3/4] bg-card overflow-hidden">
           <img
             src="/bio.jpg"
-            alt="Valentina Reyes - Retrato artístico"
+            alt="Luna Kuyen - Retrato Luz y Compas"
             class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
           />
         </div>
-        <div class="absolute -bottom-4 -right-4 w-32 h-32 border-2 border-primary -z-10" />
+        <div
+          class="absolute -bottom-4 -right-4 w-32 h-32 border-2 border-primary -z-10"
+        >
+        </div>
       </div>
 
       <!-- Content -->
-      <div class="transition-all duration-1000 delay-300 opacity-0 translate-x-10" data-bio-content>
-        <p class="text-primary text-sm uppercase tracking-[0.3em] mb-4">Sobre Mí</p>
-        <h2 class="text-3xl md:text-4xl font-bold mb-6 text-foreground">Una vida dedicada al arte escénico</h2>
+      <div
+        class="transition-all duration-1000 delay-300 opacity-0 translate-x-10"
+        data-bio-content
+      >
+        <h2 class="text-3xl md:text-4xl font-bold mb-6 text-foreground">
+          Biografía
+        </h2>
         <div class="space-y-4 text-muted-foreground leading-relaxed">
           <p>
-            Con más de 15 años de experiencia en las artes escénicas, mi pasión por el teatro y la danza ha sido el
-            motor que impulsa cada una de mis creaciones. Formada en la Escuela Nacional de Arte Dramático, he
-            tenido el privilegio de trabajar con reconocidos directores y compañías tanto nacionales como
-            internacionales.
+            Artista escénica apasionada por crear experiencias únicas que
+            conectan con el público desde la emoción y la sorpresa. Su formación
+            en danzas variadas, teatro físico, clown, pantomima, circo,
+            maquillaje artístico, la ha convertido en una intérprete versátil
+            capaz de adaptarse a cualquier proyecto: desde intervenciones con
+            fuego que iluminan eventos corporativos, fiestas, shows musicales
+            hasta personajes cautivadores para eventos escolares, celebraciones
+            privadas y propuestas escénicas experimentales. Además ha
+            desempeñado su rol docente tanto en danzas como en teatro generando
+            espacios pedagógico-didácticos que se adaptan a cualquier sujeto de
+            aprendizaje.
           </p>
           <p>
-            Mi trabajo explora la intersección entre el cuerpo, la emoción y el espacio, buscando crear experiencias
-            que trasciendan las barreras del lenguaje y conecten directamente con el alma del espectador.
+            Su perspectiva se basa en impulsar un arte versátil que posibilite
+            la fusión con diversas disciplinas y formatos; con el objetivo de
+            generar comunidad, trabajar en equipo y enriquecer propuestas. El
+            compromiso, la disposición y el ideal de generar momentos memorables
+            le permiten llevar magia y profesionalismo a cada proyecto, intentar
+            superar las expectativas y crear conexiones genuinas con cada
+            audiencia.
           </p>
-          <p>
-            Creo firmemente que el arte tiene el poder de transformar, sanar y unir a las personas. Cada proyecto
-            que emprendo es una oportunidad para explorar nuevos territorios expresivos y compartir historias que
-            necesitan ser contadas.
-          </p>
-        </div>
-
-        <!-- Stats -->
-        <div class="grid grid-cols-3 gap-6 mt-10 pt-10 border-t border-border">
-          <div>
-            <p class="text-3xl font-bold text-primary">15+</p>
-            <p class="text-sm text-muted-foreground uppercase tracking-wider">Años</p>
-          </div>
-          <div>
-            <p class="text-3xl font-bold text-primary">50+</p>
-            <p class="text-sm text-muted-foreground uppercase tracking-wider">Obras</p>
-          </div>
-          <div>
-            <p class="text-3xl font-bold text-primary">8</p>
-            <p class="text-sm text-muted-foreground uppercase tracking-wider">Premios</p>
-          </div>
         </div>
       </div>
     </div>
@@ -59,23 +57,25 @@
 </section>
 
 <script>
-  const root = document.querySelector('[data-bio]') as HTMLElement | null;
-  const img = document.querySelector('[data-bio-image]') as HTMLElement | null;
-  const content = document.querySelector('[data-bio-content]') as HTMLElement | null;
+  const root = document.querySelector("[data-bio]") as HTMLElement | null;
+  const img = document.querySelector("[data-bio-image]") as HTMLElement | null;
+  const content = document.querySelector(
+    "[data-bio-content]"
+  ) as HTMLElement | null;
 
   if (root && img && content) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          img.classList.remove('opacity-0');
-          img.classList.remove('-translate-x-10');
-          img.classList.add('opacity-100');
-          img.classList.add('translate-x-0');
+          img.classList.remove("opacity-0");
+          img.classList.remove("-translate-x-10");
+          img.classList.add("opacity-100");
+          img.classList.add("translate-x-0");
 
-          content.classList.remove('opacity-0');
-          content.classList.remove('translate-x-10');
-          content.classList.add('opacity-100');
-          content.classList.add('translate-x-0');
+          content.classList.remove("opacity-0");
+          content.classList.remove("translate-x-10");
+          content.classList.add("opacity-100");
+          content.classList.add("translate-x-0");
         }
       },
       { threshold: 0.2 }
