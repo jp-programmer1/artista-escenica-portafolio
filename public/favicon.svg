@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" fill="transparent"/>
+  <path d="M 16 16 
+           Q 16 14 17.5 14 
+           Q 19 14 19 15.5 
+           Q 19 17 17.5 17 
+           Q 15 17 15 14.5 
+           Q 15 11 18.5 11 
+           Q 22 11 22 14.5 
+           Q 22 19 17.5 19 
+           Q 12 19 12 13.5 
+           Q 12 7 19.5 7 
+           Q 26 7 26 14.5 
+           Q 26 23 17.5 23 
+           Q 8 23 8 12.5 
+           Q 8 2 21 2" 
+        fill="none" 
+        stroke="#8B5CF6" 
+        stroke-width="2.5" 
+        stroke-linecap="round"/>
+</svg>
