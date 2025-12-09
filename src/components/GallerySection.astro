@@ -6,7 +6,7 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
 
 <section
   id="material"
-  class="relative z-20 py-32 px-6 bg-card/50"
+  class="relative z-30 py-32 px-6 bg-card/50"
   data-gallery
   data-home={HOME_FOLDER_ID}
 >
@@ -189,6 +189,8 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
 
       mediaItems.forEach((item, index) => {
         const card = document.createElement("div");
+        const [name] = item.name.split('-');
+      
         card.className = `group relative overflow-hidden cursor-pointer transition-all duration-700 opacity-100 translate-y-0`;
         card.style.transitionDelay = `${index * 100}ms`;
         card.addEventListener("click", () => openLightbox(item));
@@ -267,9 +269,11 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
             ? "bg-accent/90 text-accent-foreground"
             : "bg-primary/90 text-primary-foreground"
         }`;
+        console.log(item);
+        
         typeBadge.innerHTML = item.mimeType.startsWith("video/")
-          ? '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg> Video'
-          : '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M20.4 14.5 16 10 4 20"></path></svg> Foto';
+          ? `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg> ${name}`
+          : `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="M20.4 14.5 16 10 4 20"></path></svg> ${name}`;
 
         card.appendChild(mediaWrapper);
         card.appendChild(overlay);
@@ -280,6 +284,9 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
 
     const openLightbox = (item: Items) => {
       lightboxContent.innerHTML = "";
+      
+      const [name, description] = item.name.split('-');
+      
       if (item.mimeType.startsWith("video/")) {
         const wrap = document.createElement("div");
         wrap.className = "space-y-4";
@@ -305,6 +312,26 @@ const HOME_FOLDER_ID = import.meta.env.PUBLIC_HOME_FOLDER_ID as
           "max-w-full max-h-[80vh] object-contain rounded-lg mx-auto";
         lightboxContent.appendChild(img);
       }
+      
+      // Agregar información del item
+      const infoContainer = document.createElement("div");
+      infoContainer.className = "mt-4 text-center space-y-2";
+      
+      if (name) {
+        const titleEl = document.createElement("h3");
+        titleEl.className = "text-lg font-semibold text-foreground";
+        titleEl.textContent = name.trim();
+        infoContainer.appendChild(titleEl);
+      }
+      
+      if (description) {
+        const descEl = document.createElement("p");
+        descEl.className = "text-sm text-muted-foreground";
+        descEl.textContent = description.trim();
+        infoContainer.appendChild(descEl);
+      }
+      
+      lightboxContent.appendChild(infoContainer);
       lightboxEl.classList.remove("hidden");
       lightboxEl.classList.add("flex");
     };
